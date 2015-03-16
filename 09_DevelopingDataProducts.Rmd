@@ -1,0 +1,30 @@
+---
+title: "Developing Data Products"
+author: "crupley"
+date: "Sunday, February 08, 2015"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+---
+
+# Developing Data Products course notes
+
+## Overview
+---|---
+**Dates** | 2014-08-05 : 2014-08-27
+**Course** | Developing Data Products
+**Portal** | Coursera
+**Instructor(s)** | Jeff Leek, Brian Caffo, Roger Peng: Johns Hopkins
+**Description** | A data product is the production output from a statistical analysis. Data products automate complex analysis tasks or use technology to expand the utility of a data informed model, algorithm or inference. This course covers the basics of creating data products using Shiny, R packages, and interactive graphics. The course will focus on the statistical fundamentals of creating a data product that can be used to tell a story about data to a mass audience.
+
+
+## Course Notes
+
+### Week 1
+### Week 2
+### Week 3
+### Week 4
+
+
+## Projects

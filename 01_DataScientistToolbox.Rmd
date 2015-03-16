@@ -1,0 +1,129 @@
+---
+title: "01_DataScientistToolbox"
+author: "crupley"
+date: "Thursday, February 05, 2015"
+output: html_document
+---
+# Data Scientist Toolbox course notes
+
+## Overview
+A collection of notes from my experience with the course, Data Scientist Toolbox taken on Coursera.
+
+---|---
+**Dates** | 2014-08-05 : 2014-08-19
+**Course** | Data Scientist Toolbox
+**Portal** | Coursera
+**Instructor(s)** | Jeff Leek, Brian Caffo, Roger Peng: Johns Hopkins
+**Description** | In this course you will get an introduction to the main tools and ideas in the data scientist's toolbox. The course gives an overview of the data, questions, and tools that data analysts and data scientists work with. There are two components to this course. The first is a conceptual introduction to the ideas behind turning data into actionable knowledge. The second is a practical introduction to the tools that will be used in the program like version control, markdown, git, GitHub, R, and RStudio.
+
+
+## Course Notes
+
+### Week 1
+
+Data Science Process
+
+* define the question
+* define the ideal dataset
+* what data do you have
+* get data
+* clean data
+* exploratory analysis
+* statistical prediction/modeling
+* interpret results
+* challenge results
+* synthesize/writeup results
+* create reproducible code
+* distribute results
+
+### Week 2
+
+**Command line interface**
+
+---|---
+pwd | prints working directory
+clear | clear current window
+ls | list files and folders
+cd | change directory
+mkdir | make directory
+touch | creates empty file
+cp | copy
+rm | remove, delete
+mv | move or rename
+echo | repeats back commands entered
+
+
+**Git**
+
+**Create** | -
+---|---
+git init | initializes new repository in current directory
+git remote add origin https://... | connects current repository to remote
+git add . | adds files to tracker
+git commit -m "message" | commits changes of any tracked files to local repo
+git push | updates local repository to remote
+**Fork** |---
+"fork" on github | creates a fork on to your github account
+git clone https://(fork url) | connects remote fork locally
+**Branch** | --
+git checkout -b branchname | creates new branch and changes to it
+git branch | tells what branch you are on
+git checkout master | changes to master branch
+**Pull** | --
+pull request on github | ask for permission to add your fork to original
+**General** | --
+git config --list | show config settings
+
+Resources:
+
+* [git-scm.com/doc](git-scm.com/doc)
+* [help.github.com](help.github.com)
+
+
+**Markdown**
+```{r markdown, eval=FALSE}
+# heading
+## secondary heading
+### tertiary heading
+
+* unordered list character
+```
+
+**Installing R Packages**
+
+* `available.packages()` - list packages available to download
+* `install.packages("name")` - can use vector of names, installs all dependent packages as well
+
+from bioconductor:
+
+* source("http://bioconductor.org/biochlite.R")
+* biochlite("GenomicFeatures")
+
+Load package: `library(ggplot2)`
+
+`search()`: list attached package functions
+
+### Week 3
+
+Types of data science questions (increasing difficulty)
+1. Descriptive
+2. Exploratory - find new relationships
+3. Inferential - use a small sample to say something about a larger sample - most common type
+4. Predictive - use data on some object to predict values for another
+5. Causal - usually require randomized studies
+6. Mechanistic - understand exact changes that lead to other changes (science and engineering)
+
+Good experiments:
+
+* have replication
+* measure variability
+* generalize the problem you care about
+* are transparent in code and data
+
+Measures
+
+* **Sensitivity**: P(positive test | disease) : true positive
+* **Specificity**: P(negative test | no disease) : true negative
+* **Positive predictive value**: P(disease | positive test)
+* **Negative predictive value**: P(no disease | negative test)
+* **Accuracy**: P(correct outcome)

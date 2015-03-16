@@ -1,0 +1,409 @@
+---
+title: "R Programming"
+author: "crupley"
+date: "Thursday, February 05, 2015"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+---
+
+# R Programming course notes
+
+## Overview
+---|---
+**Dates** | 2014-08-05 : 2014-08-27
+**Course** | R Programming
+**Portal** | Coursera
+**Instructor(s)** | Jeff Leek, Brian Caffo, Roger Peng: Johns Hopkins
+**Description** | In this course you will learn how to program in R and how to use R for effective data analysis. You will learn how to install and configure software necessary for a statistical programming environment and describe generic programming language concepts as they are implemented in a high-level statistical language. The course covers practical issues in statistical computing which includes programming in R, reading data into R, accessing R packages, writing R functions, debugging, profiling R code, and organizing and commenting R code. Topics in statistical data analysis will provide working examples.
+
+
+## Course Notes
+
+### Week 1
+
+References:
+
+* "White book" - Statistical Models in S, 1958
+* "Green book" - Programming with data, 1998
+
+Packages:
+
+* Base - utils, stats, datasets, graphics, grDevices, grid, methods, tools,
+parallel, compiler, splines, stats4
+* Recommended - boot, class, cluster, codetools, foreign, KernSmooth, lattice,
+mgcv, nime, rpart, survival, MASS, spatial, nnet, Matrix
+
+Object Classes
+
+* logical
+* numeric
+* character
+* complex
+* interger - \#L forces interger
+
+**vector** - series of objects of the same class, vector(class, length)
+
+**list** - can have multiple classes
+
+**attributes** - name, dimension, class, length, etc. - `attributes(x)`
+
+**matrix** - filled columnwise
+
+**factor** - categorical variable
+
+* `factor(elements, levels=)`
+* attribute: levels - various categories included
+* `table(factor)` - returns summary of category counts
+
+**Data Frame** - object used to store tabular data
+
+* every element has same length (rows)
+* can have different classes; string, numeric, etc.
+
+**Subsetting**
+
+---|---
+\[  |  returns objects with same class as original: variable[1]
+\[\[ | extract 1 element, may have different class: variable[[1]]
+\$ | extract by name: variable$name
+
+--|--
+`x[1]` | first element
+`x[1:4]` | elements 1-4
+`x[x > a]` | elements > a
+`x[1,2]` (matrix) | element in row 1, column 2 of matrix
+`x[1]` (list) | returns first element as a list
+`x[[1]]` (list) | returns first element as vector
+`x$name` | returns element with name
+`x["name"]` | same as above
+`x[[character_string]]` | can use variable as index
+`x[[1]][[3]]` | extract third element of first item
+`x[[c(1,3)]]` | same as above
+`x$nam` | partial matching, requires only enough characters to be unique
+
+
+**Function Table**
+
+Function  |  Use
+----------|--------
+`cbind(x1, x2)` | "column bind" combines vectors into matrix column-wise
+`rbind(x1, x2)` | "row bind"
+`nrow()` | number of rows in an object
+`ncol()` | number of columns
+`names()` | returns column names of an object
+`names() <- ...` | sets column names of an object
+`dimnames()`  | used to label rows and columns of a matrix
+
+Reading and writing data
+
+* `read.table(), read.csv()` - import from a file
+* `read.lines()` - reads lines of text file
+* `source()` - imports objects with names
+* `dget` - `y <- dget("filename.R")` imports object into y
+* `load` - saved workspace
+* `unserialize` - single R object in binary
+
+Writing
+
+* `write.table`
+* `writeLines`
+* `dump` - `dump(object_vector, file = "filename")` writes multiple objects
+* `dput` - outputs to screen
+    * `dput(x, file = "filename.R")` - outputs object to file
+* `save`
+* `serialize`
+
+Usage
+
+`read.table(file, header = T/F, sep, colClasses, nrows, comment.char, skip, stringsAsCharacters)`
+
+use "colClasses" to speed up import, R does not have to determine
+
+**Connections**
+```{r connections, eval = FALSE}
+con <- file()
+data <- read.csv(con)
+close(con)
+```
+
+--|--
+`file()` | connects file
+`gzfile()` | connects gzip
+`bzfile()` | connects bzip2
+`url()` | connects web page
+
+
+**Memory size**
+
+* numeric: 8 bytes
+* 2^20 bytes / MB, 2^10 MB/GB
+
+### Week 2
+
+Control Structures | --
+---|---
+if/else | conditional
+for | # of lines
+while | while condition is true
+repeat | infinite loop
+break | end loop
+next | skip iteration of loop
+return | exit function
+
+```{r if for while, eval=FALSE}
+# "if" syntax
+if(<condition>){
+    -stuff-
+} else if(<condition>) {
+    -stuff-
+} else {
+    -more stuff-
+}
+
+# "for" syntax
+for (i in 1:100) {
+   -do stuff-
+}
+
+# "while"
+while(<condition>) {}
+
+# "repeat"
+repeat {}
+```
+
+**Functions**
+
+```{r function, eval=FALSE}
+myfun <- function(<argument>) {}
+```
+
+* stored as objects of class "function"
+* argument matching: if not named (e.g. na.rm=FALSE), inputs are assigned to next argument.
+    1. exact match
+    2. partial match
+    3. positional match
+* default values: `f <- function(1, b=1, c="cracker", d=NULL, ...)`
+    * a has no default, others do
+* "..." argument - pass on a variable number of arguments
+    * all must be named and cannot be partially matched
+* function returns last expression in a function
+    
+**Coding Standards**
+
+1. Write in plain text
+2. Indent 4-8 space
+3. Limit width. 80 columns is good
+4. Limit length of function - each should do only one thing, accomplish one task
+
+**Scoping Rules**
+
+* Binding
+    * R has a search order for symbols. If something is defined twice (function, variable...), first found is used.
+    * `search()` function shows order
+    * each newly loaded package goes in position 2, others pushed down
+        * position 1 is workspace
+    * functions and objects in separate lists
+    
+* Lexical or static scoping
+    * the values of free variables are searched for in the environment where the function was defined (dynamic scoping would be where the function was called)
+    * closure (or function closure) - function associated with an environment
+    * if free variable is not found in environment, parent is searched
+        * continues up parent trees to top-level environment, usually global (workspace)
+        * then continues down search path until empty environment then error if not found
+    * `ls(environment(function))` - lists all variables in the function's environment
+    * `get("variable", environment(function))` - returns the value of variable in particular environment
+
+**Vectorized Operations**
+
+* R operates vectorized, similar to Matlab
+* `[x1 x2 x3] + [y1 y2 y3] = [x1+y1 x2+y2 x3+y3]`
+* matrix multiplication operator: `%*%`
+* element-wise multiplication: `*`
+
+**Dates and times**
+
+* Dates: "Date" class: days since 1970-01-01
+* Time: "POSIXct" (integer) or "POSIXlt" (list) class: seconds since 1970-01-01
+* `x <- as.Date("1970-01-01")`
+* `weekdays(x)`: returns day of the week
+* `months(x)`: returns month
+* `Sys.time()`: returns current system time
+* POSIXlt: list, contains sec, min, hour, year, etc.
+    * t$sec returns seconds
+* `strptime()`: converts strings to date format using supplied formatting
+
+### Week 3
+
+Loop functions | --
+---|---
+`lapply` | loop over a list and evaluate a function on each element
+`sapply` | same as `lapply` but try to simplify result
+`apply` | apply function over margins of an array
+`tapply` | apply function over subsets of a vector, "table apply"
+`mapply` | multivariate apply
+`split` | in conjunction with above. split objects
+
+```{r loop functions, eval=FALSE}
+#    list, to apply, arguments passed to function
+lapply(x, function, ...)
+
+lapply(x, mean)  #finds the mean of each element in list x
+```
+
+anonymous functions - created and called within loop functions, not named:
+`lapply(x, {do some stuff})`
+
+**sapply**
+
+* simplifies
+* single result: returns vector
+* list of all same length: returns matrix
+* else, returns list, same as lapply
+
+**apply(x, margin function, ...)**
+
+* x : matrix
+* margin : across which dimension? 1=rows, 2=columns, 3...
+* specialized versions:
+    * `rowSums(x)` equivalent to `apply(x, 1, sum)`
+    * `rowMeans(x)`
+    * `colSums(x)`
+    * `colMeans(x)`
+    
+**tapply(x, index, function, ...)**
+
+* index : categories, same length as x
+* e.g. means of function by category:
+```{r tapply}
+x <- rnorm(100, 1, .5)
+summary(x)
+f <- factor(rbinom(100, 1, 0.6), labels = c("Thing1", "Thing2"))
+summary(f)
+
+# mean of x by f factor
+tapply(x, f, mean)
+```
+* `tapply` equivalent to `lapply` + `split`
+```{r split}
+lapply(split(x,f), mean) #but returns a list instead
+```
+
+**mapply(function, ...)**
+
+* executes a function multiple time with different arguments
+* "..." are vectors of arguments to function
+* useful for vectorizing a function - want to create a vector of funcction outputs by inputting vector to a function
+```{r mapply}
+v1 <- c(1,2,3)
+v2 <- c(4,5,6)
+v1
+v2
+mapply(sum, v1, v2)
+```
+
+
+**Debugging**
+
+* `invisible()` - suppresses auto printing from function to console
+* `traceback()` - prints out function calls after an error, if it occurs
+* `debug()` - step through function line by line (sets/unsets debug flag on a function to run every time)
+* `browser()` - suspends function when called and puts it in debug mode, pause point
+* `trace()` - can insert debugging code into a function in specific places
+* `recover()` - can modify error behavior so you can modify function stack
+
+
+
+### Week 4
+
+* `str()` : "structure" of an R object
+    * on vector : returns type, length first few elements
+    * factor : returns * of levels, level names, contents of few
+    * data frame : observations and variables, beginning of each var list
+    * matrix : type, dimensions, first elements
+    
+**Simulation**
+
+* Generate random numbers
+    * `rnorm` : random normal variables
+    * `dnorm` : evaluate normal probability density
+    * `pnorm` : evaluate cumulative distribution of normal
+    * `rpois` : random poisson variables
+* typical variables used
+    * d: density
+    * r: random number distribution
+    * p: cumulative distribution
+    * q: quantile
+* available for a number of distributions: norm, pois, binom, ...
+
+`set.seed(n)`
+* when called before a random number generation step, gives reproducible randoms
+* shoud strive to use always
+
+* Linear model
+    * Linear: $y = \beta_0 + \beta_1x$
+    * Binomial: $y = \beta_0 + \beta_1x$
+    * Poisson: $y = e^{\beta_0 + \beta_1x}$
+```{r linear model, fig.height=3}
+bo <- 12
+b1 <- 25
+par(mfrow = c(1,3))
+x <- rnorm(100); lin <- bo + b1 * x; plot(x, lin, main="Linear")
+x <- rbinom(100,1,0.5); bin <- bo + b1 * x; plot(x, bin, main="Binomial")
+pois = rpois(100, 1); plot(lin, pois, main="Poisson")
+```
+
+`sample(vector, number, replace=TRUE)` - randomly takes number of entries from vector with replacement
+
+**Evaluate speed of execution**
+
+* `system.time()`
+    * takes function or expression {} and returns time it takes to evaluate
+        * user time: time charged to CPU
+        * elapsed time: "wall clock" time
+        * if elapsed > user : CPU waiting around
+        * user > elapsed : multi core processing
+* `Rprof()`
+    * summary Rprof() - makes profiler output readable
+    * "by.total" - divides time in each function by total
+    * "by.self" - as above but subtracts time in above functions in call stack
+    * optim, nlm, optimize - lexical scoping to avoid repeating data computations
+
+## Course Projects
+### Programming Assignment 1
+Assignment description taken from course materials.
+
+**Introduction**
+
+>For this first programming assignment you will write three functions that are meant to interact with dataset that accompanies this assignment.
+
+**Part 1**
+
+>Write a function named 'pollutantmean' that calculates the mean of a pollutant (sulfate or nitrate) across a specified list of monitors. The function 'pollutantmean' takes three arguments: 'directory', 'pollutant', and 'id'. Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA.
+
+**Part 2**
+
+>Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases.
+
+**Part 3**
+
+>Write a function that takes a directory of data files and a threshold for complete cases and calculates the correlation between sulfate and nitrate for monitor locations where the number of completely observed cases (on all variables) is greater than the threshold. The function should return a vector of correlations for the monitors that meet the threshold requirement. If no monitors meet the threshold requirement, then the function should return a numeric vector of length 0.
+
+### Programming Assignment 2
+Problem description from the course materials.
+
+**Introduction**
+
+>This second programming assignment will require you to write an R function that is able to cache potentially time-consuming computations. For example, taking the mean of a numeric vector is typically a fast operation. However, for a very long vector, it may take too long to compute the mean, especially if it has to be computed repeatedly (e.g. in a loop). If the contents of a vector are not changing, it may make sense to cache the value of the mean so that when we need it again, it can be looked up in the cache rather than recomputed. In this Programming Assignment you will take advantage of the scoping rules of the R language and how they can be manipulated to preserve state inside of an R object.
+
+### Programming Assignment 3
+Using the data for this assignment from the Hospital Compare web site (http://hospitalcompare.hhs.gov) run by the U.S. Department of Health and Human Services, an evaluation of various measures of hospital performance was performed. The assignment was in four parts.
+
+1. Plot the 30-day mortality rates for heart attack
+2. Find the best hospital in a state
+3. Rank hospitals by outcome in a state
+4. Rank hospitals in all states
+
+Each exercise required developing various sorting and filtering functions in R.

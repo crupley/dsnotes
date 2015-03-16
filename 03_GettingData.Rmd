@@ -1,0 +1,160 @@
+---
+title: "Getting and Cleaning Data"
+author: "crupley"
+date: "Friday, February 06, 2015"
+output:
+  html_document:
+    keep_md: yes
+    number_sections: yes
+    toc: yes
+---
+
+# Getting and Cleaning Data course notes
+
+## Overview
+
+---|---
+**Dates** | 2014-09-04:24
+**Course** | Getting and Cleaning Data
+**Portal** | Coursera
+**Instructor(s)** | Jeff Leek, Brian Caffo, Roger Peng: Johns Hopkins
+**Description** | Before you can work with data you have to get some. This course will cover the basic ways that data can be obtained. The course will cover obtaining data from the web, from APIs, from databases and from colleagues in various formats. It will also cover the basics of data cleaning and how to make data "tidy". Tidy data dramatically speed downstream data analysis tasks. The course will also cover the components of a complete data set including raw data, processing instructions, codebooks, and processed data. The course will cover the basics needed for collecting, cleaning, and sharing data.
+
+
+## Course Notes
+
+### Week 1
+
+Processing Data: **all steps should be recorded**: from raw data state
+
+**Tidy Data**
+
+Consists of:
+
+1. the raw data
+2. the tidy data
+3. a codebook describing each variable and its values in the tidy data set
+4. an explicit and exact ercipe you used to go from 1 to 2 and 3
+
+Features:
+
+1. each varaible in one column
+2. each different observation in a different row
+3. one table for each "kind" of variable
+4. multiple related tables should have column allowing linkage (e.g. ID#)
+
+* include top row as variable names
+* human readable names
+* one file per table
+
+**Code book** (describing dataset)
+
+1. Information about variables - *units* of measure
+2. Information about summary choices
+3. Information about experimental study design - how data was collected
+4. Instruction list (e.g. R script) how got from raw to tidy
+
+mac: `setwd("/Users/username")`
+
+windows: `setwd("c:\\Users\\username")`
+
+**Downloading files**
+
+```{r file dl, eval=FALSE}
+# Template
+if(!file.exists(filename)){
+    dir.create(directory)
+    download.file(url, destfile, method)
+    dateDownloaded <- date(); save(dateDownloaded, file="dateDownloaded.RData")
+}
+```
+
+**Reading local flat files**
+
+* **Excel**
+    * `library(xlsx)`
+    * `read.xlsx(file, sheetIndex, header, colIndex, rowIndex) #last 2 for subsetting`
+    * `write.xlsx`
+    * `read.xlsx2` : faster but unstable with subsets
+    * also: XLConnect R package
+* **XML** - eXtensible Markup Language
+    * tags: \<start tag label>, \</end tag label>, \<line-break /> (empty tag)
+    * elements: specific labels \<Greeting> \</Greeting>
+    * attributes: \<img src=" " alt=" "> (src and alt are attributes of img)
+    * `library(XML)`
+    
+```{r XML examples, eval=FALSE}
+library(XML)
+doc <- xmlTreeParse(url, useInternal)
+rootNode <- xmlRoot(doc)
+xmlName(rootNode)  # highest level label, element
+names(rootNode)
+
+rootNode[[1]]  # first element bundle <..> to </..>
+rootNode[[1]][[1]]  # first element within (above)
+
+xmlSApply(rootNode, xmlValue)  # function to be applied
+xmlSApply(rootNode, "//name", xmlValue)  # returns vector of all data with "name" tags
+
+htmlTreeParse (...)  # for html files
+```
+
+    * xPath : language for accessing xml: stat. berkeley.edu ... XML.pdf
+
+* **JSON** -- JavaScript Object Notation
+    * common for API's
+```{r json examples, eval=FALSE}
+library(jsonlite)
+jsonData <- fromJSON(url)  # returns data frame (nested)
+
+myJSON <- toJSON(R object, pretty=TRUE)  # converts data in JSON format
+cat(myJSON)  # prints to screen
+```
+    * R bloggers : tutorial on jsonlite
+    
+**data.table** library
+
+* much more efficient version of data.frame
+* `tables()` : general info on data.table oject
+* subsetting : mostly same as data frame except:
+    * using a single index will take subset of row, `df[1:3]`, rows 1-3
+    * can use expressions, {}, to subset
+* `dt[,list(mean(x), sum(z))]`
+    * dt with variables (columns) named x and z
+    * returns results of function applied on variables
+* `dt[,table(y)]` - tabulates data in variable y
+* add column: `dt[,w:=z^2]`
+* copies of data tables are not created
+* `dt[,a:=x>0]` - adds logical column
+* `dt[,b:=mean(x+w), by=a]`  - takes means of subsets according to factor, "a"
+
+
+### Week 2
+
+**Reading from SQL**
+
+* mySQL references:
+    * r-bloggers: mysql and R
+    * pantz.org commands
+    * RMySQL vignette
+* Databases
+    * Tables : ~dataset
+        * Fields : ~column variable of dataset
+            * records : ~row
+* install mySQL
+* install RMySQL ... `install.packages()`
+
+```{r SQL examples, eval=FALSE}
+ID <- dbConnect(MySQL(), user= , host = <url>)
+dbGetQuery(ID, <command>)  # issue db-specific command
+dbDisconnect(ID)  # always pair this with previous and do not leave session open
+dbListTables(ID)  # returns names
+dbListFIelds(ID, <table name>)  # returns names
+dbReadTable(ID, <table name>)  # returns entire table
+query <- dbszendQuery(ID, <command>)  # can select subset of data
+fetch(query)  # gets results of query
+fetch(query, n=10); dbClearResult(query)
+```
+
+### Week 3
+### Week 4
